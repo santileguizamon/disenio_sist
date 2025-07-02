@@ -24,214 +24,27 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/clientes": {
+        "/api/datos-procesados": {
             "get": {
-                "description": "Obtiene la lista de clientes potenciales",
+                "description": "Obtiene los datos procesados y depurados almacenados en memoria",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "clientes"
+                    "procesamiento"
                 ],
-                "summary": "Obtener todos los clientes potenciales",
+                "summary": "Consultar datos procesados",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/entities.ClientePotencial"
-                            }
+                            "$ref": "#/definitions/handlers.DatosProcesadosResponse"
                         }
                     },
-                    "500": {
-                        "description": "Internal Server Error",
+                    "405": {
+                        "description": "Method Not Allowed",
                         "schema": {
                             "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Crea un nuevo cliente potencial en el sistema",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "clientes"
-                ],
-                "summary": "Crear un nuevo cliente potencial",
-                "parameters": [
-                    {
-                        "description": "Datos del cliente potencial",
-                        "name": "cliente",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/entities.ClientePotencial"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/entities.ClientePotencial"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/clientes/{id}": {
-            "get": {
-                "description": "Obtiene los datos de un cliente potencial específico",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "clientes"
-                ],
-                "summary": "Obtener un cliente potencial por ID",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID del cliente potencial",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.ClientePotencial"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "description": "Actualiza los datos de un cliente potencial existente",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "clientes"
-                ],
-                "summary": "Actualizar un cliente potencial",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID del cliente potencial",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Datos actualizados del cliente",
-                        "name": "cliente",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/entities.ClientePotencial"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.ClientePotencial"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/controllers.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/controllers.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/controllers.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Elimina un cliente potencial del sistema",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "clientes"
-                ],
-                "summary": "Eliminar un cliente potencial",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID del cliente potencial",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content"
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/controllers.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/controllers.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/controllers.ErrorResponse"
                         }
                     }
                 }
@@ -239,7 +52,7 @@ const docTemplate = `{
         },
         "/api/procesar": {
             "post": {
-                "description": "Ejecuta el pipeline completo: recolección, procesamiento, persistencia y reporte",
+                "description": "Recibe datos crudos, los procesa y depura, y dispara eventos de notificación",
                 "consumes": [
                     "application/json"
                 ],
@@ -249,15 +62,61 @@ const docTemplate = `{
                 "tags": [
                     "procesamiento"
                 ],
-                "summary": "Procesar datos",
+                "summary": "Procesar datos crudos",
+                "parameters": [
+                    {
+                        "description": "Datos crudos a procesar",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.DatosProcesamientoRequest"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/handlers.ProcesamientoResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    },
+                    "405": {
+                        "description": "Method Not Allowed",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/reporte": {
+            "get": {
+                "description": "Obtiene el último reporte generado usando el patrón Builder",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "procesamiento"
+                ],
+                "summary": "Obtener último reporte",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ReporteResponse"
+                        }
+                    },
+                    "405": {
+                        "description": "Method Not Allowed",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResponse"
                         }
                     }
                 }
@@ -265,28 +124,113 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "controllers.ErrorResponse": {
+        "handlers.DatosProcesadosResponse": {
             "type": "object",
             "properties": {
-                "error": {
-                    "type": "string"
+                "productos": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": true
+                    }
                 },
-                "message": {
-                    "type": "string"
+                "sucursales": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": true
+                    }
+                },
+                "ventas": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": true
+                    }
                 }
             }
         },
-        "entities.ClientePotencial": {
+        "handlers.DatosProcesamientoRequest": {
             "type": "object"
         },
         "handlers.ErrorResponse": {
             "type": "object",
             "properties": {
                 "error": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Bad Request"
                 },
                 "message": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "JSON inválido"
+                },
+                "time": {
+                    "type": "string",
+                    "example": "2024-01-15T10:30:00Z"
+                }
+            }
+        },
+        "handlers.ProcesamientoResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Datos procesados y depurados y reporte generado"
+                },
+                "status": {
+                    "type": "string",
+                    "example": "Proceso completado exitosamente"
+                },
+                "time": {
+                    "type": "string",
+                    "example": "2024-01-15T10:30:00Z"
+                }
+            }
+        },
+        "handlers.ReporteResponse": {
+            "type": "object",
+            "properties": {
+                "Datos": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "Estado": {
+                    "type": "string",
+                    "example": "completado"
+                },
+                "FechaFin": {
+                    "type": "string",
+                    "example": "2024-01-15T23:59:59Z"
+                },
+                "FechaInicio": {
+                    "type": "string",
+                    "example": "2024-01-01T00:00:00Z"
+                },
+                "Filtros": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "[\"fecha_inicio\"",
+                        "\"fecha_fin\"]"
+                    ]
+                },
+                "GeneradoEn": {
+                    "type": "string",
+                    "example": "2024-01-15T12:00:00Z"
+                },
+                "ID": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "Resumen": {
+                    "type": "string",
+                    "example": "Reporte de ventas del período"
+                },
+                "Tipo": {
+                    "type": "string",
+                    "example": "ventas"
                 }
             }
         }
@@ -299,8 +243,8 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "localhost:8080",
 	BasePath:         "/",
 	Schemes:          []string{"http"},
-	Title:            "Sistema de Gestión de Información API",
-	Description:      "API RESTful con arquitectura dirigida por eventos para gestión de clientes potenciales",
+	Title:            "Sistema de Procesamiento de Datos API",
+	Description:      "API RESTful con arquitectura dirigida por eventos para procesamiento, depuración y consulta de datos de productos, ventas y sucursales",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

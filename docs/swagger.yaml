@@ -1,19 +1,81 @@
 basePath: /
 definitions:
-  controllers.ErrorResponse:
+  handlers.DatosProcesadosResponse:
     properties:
-      error:
-        type: string
-      message:
-        type: string
+      productos:
+        items:
+          additionalProperties: true
+          type: object
+        type: array
+      sucursales:
+        items:
+          additionalProperties: true
+          type: object
+        type: array
+      ventas:
+        items:
+          additionalProperties: true
+          type: object
+        type: array
     type: object
-  entities.ClientePotencial:
+  handlers.DatosProcesamientoRequest:
     type: object
   handlers.ErrorResponse:
     properties:
       error:
+        example: Bad Request
         type: string
       message:
+        example: JSON inválido
+        type: string
+      time:
+        example: "2024-01-15T10:30:00Z"
+        type: string
+    type: object
+  handlers.ProcesamientoResponse:
+    properties:
+      message:
+        example: Datos procesados y depurados y reporte generado
+        type: string
+      status:
+        example: Proceso completado exitosamente
+        type: string
+      time:
+        example: "2024-01-15T10:30:00Z"
+        type: string
+    type: object
+  handlers.ReporteResponse:
+    properties:
+      Datos:
+        additionalProperties: true
+        type: object
+      Estado:
+        example: completado
+        type: string
+      FechaFin:
+        example: "2024-01-15T23:59:59Z"
+        type: string
+      FechaInicio:
+        example: "2024-01-01T00:00:00Z"
+        type: string
+      Filtros:
+        example:
+        - '["fecha_inicio"'
+        - '"fecha_fin"]'
+        items:
+          type: string
+        type: array
+      GeneradoEn:
+        example: "2024-01-15T12:00:00Z"
+        type: string
+      ID:
+        example: 1
+        type: integer
+      Resumen:
+        example: Reporte de ventas del período
+        type: string
+      Tipo:
+        example: ventas
         type: string
     type: object
 host: localhost:8080
@@ -22,172 +84,78 @@ info:
     email: support@swagger.io
     name: API Support
     url: http://www.swagger.io/support
-  description: API RESTful con arquitectura dirigida por eventos para gestión de clientes
-    potenciales
+  description: API RESTful con arquitectura dirigida por eventos para procesamiento,
+    depuración y consulta de datos de productos, ventas y sucursales
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://swagger.io/terms/
-  title: Sistema de Gestión de Información API
+  title: Sistema de Procesamiento de Datos API
   version: "1.0"
 paths:
-  /api/clientes:
+  /api/datos-procesados:
     get:
-      description: Obtiene la lista de clientes potenciales
+      description: Obtiene los datos procesados y depurados almacenados en memoria
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/entities.ClientePotencial'
-            type: array
-        "500":
-          description: Internal Server Error
+            $ref: '#/definitions/handlers.DatosProcesadosResponse'
+        "405":
+          description: Method Not Allowed
           schema:
             $ref: '#/definitions/handlers.ErrorResponse'
-      summary: Obtener todos los clientes potenciales
+      summary: Consultar datos procesados
       tags:
-      - clientes
-    post:
-      consumes:
-      - application/json
-      description: Crea un nuevo cliente potencial en el sistema
-      parameters:
-      - description: Datos del cliente potencial
-        in: body
-        name: cliente
-        required: true
-        schema:
-          $ref: '#/definitions/entities.ClientePotencial'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/entities.ClientePotencial'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      summary: Crear un nuevo cliente potencial
-      tags:
-      - clientes
-  /api/clientes/{id}:
-    delete:
-      description: Elimina un cliente potencial del sistema
-      parameters:
-      - description: ID del cliente potencial
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/controllers.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/controllers.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/controllers.ErrorResponse'
-      summary: Eliminar un cliente potencial
-      tags:
-      - clientes
-    get:
-      description: Obtiene los datos de un cliente potencial específico
-      parameters:
-      - description: ID del cliente potencial
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/entities.ClientePotencial'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
-      summary: Obtener un cliente potencial por ID
-      tags:
-      - clientes
-    put:
-      consumes:
-      - application/json
-      description: Actualiza los datos de un cliente potencial existente
-      parameters:
-      - description: ID del cliente potencial
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Datos actualizados del cliente
-        in: body
-        name: cliente
-        required: true
-        schema:
-          $ref: '#/definitions/entities.ClientePotencial'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/entities.ClientePotencial'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/controllers.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/controllers.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/controllers.ErrorResponse'
-      summary: Actualizar un cliente potencial
-      tags:
-      - clientes
+      - procesamiento
   /api/procesar:
     post:
       consumes:
       - application/json
-      description: 'Ejecuta el pipeline completo: recolección, procesamiento, persistencia
-        y reporte'
+      description: Recibe datos crudos, los procesa y depura, y dispara eventos de
+        notificación
+      parameters:
+      - description: Datos crudos a procesar
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.DatosProcesamientoRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Procesar datos
+            $ref: '#/definitions/handlers.ProcesamientoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "405":
+          description: Method Not Allowed
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Procesar datos crudos
+      tags:
+      - procesamiento
+  /api/reporte:
+    get:
+      description: Obtiene el último reporte generado usando el patrón Builder
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.ReporteResponse'
+        "405":
+          description: Method Not Allowed
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Obtener último reporte
       tags:
       - procesamiento
 schemes:

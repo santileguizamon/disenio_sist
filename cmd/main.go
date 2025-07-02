@@ -15,9 +15,9 @@ import (
 	"sistema-gestion-informacion/internal/interfaces/handlers"
 )
 
-// @title Sistema de Gestión de Información API
+// @title Sistema de Procesamiento de Datos API
 // @version 1.0
-// @description API RESTful con arquitectura dirigida por eventos para gestión de clientes potenciales
+// @description API RESTful con arquitectura dirigida por eventos para procesamiento, depuración y consulta de datos de productos, ventas y sucursales
 // @termsOfService http://swagger.io/terms/
 
 // @contact.name API Support
@@ -105,7 +105,7 @@ func main() {
 		if r.Method == http.MethodGet {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(`{"status":"ok","service":"Sistema de Gestión de Información"}`))
+			w.Write([]byte(`{"status":"ok","service":"Sistema de Procesamiento de Datos"}`))
 		} else {
 			http.Error(w, "Método no permitido", http.StatusMethodNotAllowed)
 		}
@@ -117,12 +117,13 @@ func main() {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
 			w.Write([]byte(`{
-				"name": "Sistema de Gestión de Información",
+				"name": "Sistema de Procesamiento de Datos",
 				"version": "1.0.0",
-				"description": "API RESTful con arquitectura dirigida por eventos",
+				"description": "API RESTful con arquitectura dirigida por eventos para procesamiento de datos",
 				"endpoints": {
-					"clientes": "/api/clientes",
 					"procesar": "/api/procesar",
+					"datos_procesados": "/api/datos-procesados",
+					"reporte": "/api/reporte",
 					"health": "/health",
 					"swagger": "/swagger/"
 				}

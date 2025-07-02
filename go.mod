@@ -1,4 +1,4 @@
-module prueba cursor
+module sistema-gestion-informacion
 
 go 1.21
 
