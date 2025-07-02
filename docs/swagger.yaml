@@ -1,0 +1,195 @@
+basePath: /
+definitions:
+  controllers.ErrorResponse:
+    properties:
+      error:
+        type: string
+      message:
+        type: string
+    type: object
+  entities.ClientePotencial:
+    type: object
+  handlers.ErrorResponse:
+    properties:
+      error:
+        type: string
+      message:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: API RESTful con arquitectura dirigida por eventos para gestión de clientes
+    potenciales
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Sistema de Gestión de Información API
+  version: "1.0"
+paths:
+  /api/clientes:
+    get:
+      description: Obtiene la lista de clientes potenciales
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.ClientePotencial'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Obtener todos los clientes potenciales
+      tags:
+      - clientes
+    post:
+      consumes:
+      - application/json
+      description: Crea un nuevo cliente potencial en el sistema
+      parameters:
+      - description: Datos del cliente potencial
+        in: body
+        name: cliente
+        required: true
+        schema:
+          $ref: '#/definitions/entities.ClientePotencial'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.ClientePotencial'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Crear un nuevo cliente potencial
+      tags:
+      - clientes
+  /api/clientes/{id}:
+    delete:
+      description: Elimina un cliente potencial del sistema
+      parameters:
+      - description: ID del cliente potencial
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+      summary: Eliminar un cliente potencial
+      tags:
+      - clientes
+    get:
+      description: Obtiene los datos de un cliente potencial específico
+      parameters:
+      - description: ID del cliente potencial
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.ClientePotencial'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Obtener un cliente potencial por ID
+      tags:
+      - clientes
+    put:
+      consumes:
+      - application/json
+      description: Actualiza los datos de un cliente potencial existente
+      parameters:
+      - description: ID del cliente potencial
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Datos actualizados del cliente
+        in: body
+        name: cliente
+        required: true
+        schema:
+          $ref: '#/definitions/entities.ClientePotencial'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.ClientePotencial'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+      summary: Actualizar un cliente potencial
+      tags:
+      - clientes
+  /api/procesar:
+    post:
+      consumes:
+      - application/json
+      description: 'Ejecuta el pipeline completo: recolección, procesamiento, persistencia
+        y reporte'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Procesar datos
+      tags:
+      - procesamiento
+schemes:
+- http
+swagger: "2.0"
